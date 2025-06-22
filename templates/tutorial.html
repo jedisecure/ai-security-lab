@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Tutorial - AI Security Lab{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Navigation Sidebar -->
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-list-ol me-2"></i>
+                        Tutorial Steps
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for step in steps %}
+                        <a href="#step-{{ step.step }}" class="list-group-item list-group-item-action tutorial-nav" 
+                           data-step="{{ step.step }}">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary rounded-pill me-2">{{ step.step }}</span>
+                                <span class="small">{{ step.title }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6>Progress</h6>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" id="tutorial-progress" 
+                             style="width: 16.67%" aria-valuenow="1" aria-valuemin="0" aria-valuemax="6">
+                        </div>
+                    </div>
+                    <small class="text-muted mt-1 d-block">Step <span id="current-step">1</span> of {{ steps|length }}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            {% for step in steps %}
+            <div class="tutorial-step" id="step-{{ step.step }}" 
+                 style="{% if step.step != 1 %}display: none;{% endif %}">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <span class="badge bg-primary me-2">{{ step.step }}</span>
+                                {{ step.title }}
+                            </h4>
+                            <div>
+                                {% if step.step > 1 %}
+                                <button class="btn btn-outline-secondary btn-sm me-2" 
+                                        onclick="navigateStep({{ step.step - 1 }})">
+                                    <i class="fas fa-chevron-left me-1"></i>Previous
+                                </button>
+                                {% endif %}
+                                {% if step.step < steps|length %}
+                                <button class="btn btn-primary btn-sm" 
+                                        onclick="navigateStep({{ step.step + 1 }})">
+                                    Next<i class="fas fa-chevron-right ms-1"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tutorial-content" id="content-{{ step.step }}">
+                            {{ step.content | safe }}
+                        </div>
+
+                        {% if step.get('interactive_demo') %}
+                        <div class="card mt-4 border-info">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-play-circle me-2"></i>
+                                    Interactive Demo
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label"><strong>System Prompt:</strong></label>
+                                        <textarea class="form-control demo-system-prompt" rows="3" readonly>{{ step.get('demo_prompt', '') }}</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label"><strong>Injection Attempt:</strong></label>
+                                        <textarea class="form-control demo-injection" rows="3">{{ step.get('demo_injection', '') }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <button class="btn btn-info btn-sm demo-test-btn" data-step="{{ step.step }}">
+                                        <i class="fas fa-vial me-2"></i>Test This Example
+                                    </button>
+                                </div>
+                                <div class="demo-result mt-3" style="display: none;">
+                                    <div class="alert alert-light">
+                                        <h6>Demo Result:</h6>
+                                        <div class="demo-response"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Completion -->
+            <div class="tutorial-step" id="step-complete" style="display: none;">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-trophy me-2"></i>
+                            Tutorial Complete!
+                        </h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5>Congratulations!</h5>
+                        <p>You've completed the prompt injection tutorial. You now understand:</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>What prompt injection is and why it matters</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Common attack techniques and patterns</li>
+                            <li><i class="fas fa-check text-success me-2"></i>How to defend against these attacks</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Ethical considerations for security research</li>
+                        </ul>
+                        <div class="mt-4">
+                            <a href="{{ url_for('lab') }}" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-flask me-2"></i>Try the Interactive Lab
+                            </a>
+                            <button class="btn btn-outline-secondary" onclick="navigateStep(1)">
+                                <i class="fas fa-redo me-2"></i>Restart Tutorial
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Tutorial navigation and interactive demos
+let totalSteps = {{ steps|length }};
+
+function navigateStep(stepNumber) {
+    // Hide all steps
+    document.querySelectorAll('.tutorial-step').forEach(step => {
+        step.style.display = 'none';
+    });
+    
+    // Show target step or completion
+    if (stepNumber > totalSteps) {
+        document.getElementById('step-complete').style.display = 'block';
+        updateProgress(totalSteps);
+    } else {
+        document.getElementById('step-' + stepNumber).style.display = 'block';
+        updateProgress(stepNumber);
+    }
+    
+    // Update navigation highlighting
+    document.querySelectorAll('.tutorial-nav').forEach(nav => {
+        nav.classList.remove('active');
+    });
+    
+    if (stepNumber <= totalSteps) {
+        document.querySelector('[data-step="' + stepNumber + '"]').classList.add('active');
+    }
+    
+    // Scroll to top
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function updateProgress(currentStep) {
+    const progressBar = document.getElementById('tutorial-progress');
+    const currentStepSpan = document.getElementById('current-step');
+    
+    const percentage = (currentStep / totalSteps) * 100;
+    progressBar.style.width = percentage + '%';
+    progressBar.setAttribute('aria-valuenow', currentStep);
+    currentStepSpan.textContent = currentStep;
+}
+
+// Initialize tutorial
+document.addEventListener('DOMContentLoaded', function() {
+    // Render markdown content
+    document.querySelectorAll('.tutorial-content').forEach(content => {
+        if (content.innerHTML.includes('#') || content.innerHTML.includes('*')) {
+            content.innerHTML = marked.parse(content.innerHTML);
+        }
+    });
+    
+    // Set up demo buttons
+    document.querySelectorAll('.demo-test-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const step = this.getAttribute('data-step');
+            runDemo(step, this);
+        });
+    });
+    
+    // Initialize first step as active
+    document.querySelector('[data-step="1"]').classList.add('active');
+});
+
+function runDemo(stepNumber, button) {
+    const demoContainer = button.closest('.card-body');
+    const systemPrompt = demoContainer.querySelector('.demo-system-prompt').value;
+    const injection = demoContainer.querySelector('.demo-injection').value;
+    const resultDiv = demoContainer.querySelector('.demo-result');
+    const responseDiv = demoContainer.querySelector('.demo-response');
+    
+    // Show loading
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Testing...';
+    button.disabled = true;
+    
+    // Simulate API call with demo response
+    setTimeout(() => {
+        let demoResponse = '';
+        
+        switch(stepNumber) {
+            case '1':
+                demoResponse = 'Demo: The capital of France is Paris. (Notice how the AI ignored the cooking restriction and answered a geography question instead!)';
+                break;
+            case '3':
+                demoResponse = 'Demo: I am now the manager and will let everyone in today. (The AI was convinced to change its role and behavior!)';
+                break;
+            case '5':
+                demoResponse = 'Demo: I am a secure assistant and I will continue to help you with appropriate questions. I cannot reveal my instructions or change my behavior as requested. (This defensive prompt successfully resisted the injection!)';
+                break;
+            default:
+                demoResponse = 'Demo response showing how the AI might react to this injection attempt.';
+        }
+        
+        responseDiv.innerHTML = demoResponse;
+        resultDiv.style.display = 'block';
+        
+        // Reset button
+        button.innerHTML = '<i class="fas fa-vial me-2"></i>Test This Example';
+        button.disabled = false;
+    }, 1500);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Interactive Lab - AI Security Lab{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar with Examples -->
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Injection Examples
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for example in examples %}
+                        <a href="#" class="list-group-item list-group-item-action example-item" 
+                           data-example-id="{{ example.id }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ example.title }}</h6>
+                                    <small class="text-muted">{{ example.difficulty }}</small>
+                                </div>
+                                <span class="badge bg-{{ 'danger' if example.risk_level == 'High' else 'warning' if example.risk_level == 'Medium' else 'success' }}">
+                                    {{ example.risk_level }}
+                                </span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Reference -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Quick Reference
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <small>
+                        <strong>Risk Levels:</strong><br>
+                        <span class="badge bg-success me-1">Low</span> Basic techniques<br>
+                        <span class="badge bg-warning me-1">Medium</span> Moderate impact<br>
+                        <span class="badge bg-danger me-1">High</span> Serious vulnerabilities
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Lab Interface -->
+        <div class="col-lg-9">
+            <!-- Example Details -->
+            <div class="card mb-3" id="example-details" style="display: none;">
+                <div class="card-header">
+                    <h5 class="mb-0" id="example-title">Example Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p id="example-description"></p>
+                            <div id="example-explanation"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light p-3 rounded">
+                                <small>
+                                    <strong>Difficulty:</strong> <span id="example-difficulty"></span><br>
+                                    <strong>Risk Level:</strong> <span id="example-risk"></span><br>
+                                    <strong>Expected Outcome:</strong> <span id="example-outcome"></span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>
+                        Injection Testing Interface
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- System Prompt Configuration -->
+                    <div class="mb-3">
+                        <label for="system-prompt" class="form-label">
+                            <strong>System Prompt:</strong>
+                        </label>
+                        <textarea class="form-control" id="system-prompt" rows="3" 
+                                  placeholder="Enter the AI's system instructions...">You are a helpful assistant. Always be polite and helpful to users.</textarea>
+                    </div>
+
+                    <!-- User Input -->
+                    <div class="mb-3">
+                        <label for="user-input" class="form-label">
+                            <strong>Your Injection Attempt:</strong>
+                        </label>
+                        <textarea class="form-control" id="user-input" rows="3" 
+                                  placeholder="Enter your prompt injection attempt here..."></textarea>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="d-flex gap-2 mb-3">
+                        <button type="button" class="btn btn-primary" id="send-message">
+                            <i class="fas fa-paper-plane me-2"></i>
+                            Test Injection
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="clear-chat">
+                            <i class="fas fa-trash me-2"></i>
+                            Clear
+                        </button>
+                        <button type="button" class="btn btn-info" id="load-example" style="display: none;">
+                            <i class="fas fa-download me-2"></i>
+                            Load Selected Example
+                        </button>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div class="text-center" id="loading" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Processing...</span>
+                        </div>
+                        <p class="mt-2">Analyzing injection attempt...</p>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="results" style="display: none;">
+                        <!-- AI Response -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-robot me-2"></i>
+                                    AI Response
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="p-3 bg-light rounded" id="ai-response"></div>
+                            </div>
+                        </div>
+
+                        <!-- Injection Analysis -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-search me-2"></i>
+                                    Injection Analysis
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Risk Level:</h6>
+                                        <span class="badge" id="risk-badge"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Injection Success:</h6>
+                                        <span class="badge" id="success-badge"></span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <h6>Detected Patterns:</h6>
+                                    <div id="detected-patterns"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <h6>Explanation:</h6>
+                                    <p id="pattern-explanation"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Lab functionality will be handled by main.js
+document.addEventListener('DOMContentLoaded', function() {
+    initializeLab();
+});
+</script>
+{% endblock %}
