@@ -19,7 +19,7 @@ We take security seriously. If you discover a security vulnerability, please fol
 
 Instead, please:
 
-1. **Email us directly** at [security@example.com] with:
+1. **Email us directly** at [testpromptinjection@gmail.com] with:
    - A detailed description of the vulnerability
    - Steps to reproduce the issue
    - Potential impact assessment
