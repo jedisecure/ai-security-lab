@@ -1,157 +1,122 @@
-# Security Policy
-
-## Supported Versions
-
+Security Policy
+Supported Versions
 We actively support and provide security updates for the following versions:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
-
-## Reporting a Vulnerability
-
+Version	Supported
+1.2.x	✅
+1.1.x	✅
+1.0.x	✅
+< 1.0	❌
+Reporting a Vulnerability
 We take security seriously. If you discover a security vulnerability, please follow these steps:
 
-### 🚨 For Security Issues
-
-**DO NOT** create a public GitHub issue for security vulnerabilities.
+🚨 For Security Issues
+DO NOT create a public GitHub issue for security vulnerabilities.
 
 Instead, please:
 
-1. **Email us directly** at [testpromptinjection@gmail.com] with:
-   - A detailed description of the vulnerability
-   - Steps to reproduce the issue
-   - Potential impact assessment
-   - Any suggested fixes (if available)
+Email us directly at [security@example.com] with:
 
-2. **Response Timeline**:
-   - We'll acknowledge receipt within 24 hours
-   - Initial assessment within 72 hours
-   - Regular updates every 5 business days
-   - Target resolution within 30 days
+A detailed description of the vulnerability
+Steps to reproduce the issue
+Potential impact assessment
+Any suggested fixes (if available)
+Response Timeline:
 
-3. **Responsible Disclosure**:
-   - Please allow us time to fix the issue before public disclosure
-   - We'll work with you on an appropriate disclosure timeline
-   - Credit will be given for responsible disclosure
+We'll acknowledge receipt within 24 hours
+Initial assessment within 72 hours
+Regular updates every 7 days until resolved
+What to expect:
 
-### 🛡️ Security Considerations
-
-This application is designed for **educational purposes only**. However, we maintain security best practices:
-
-#### What We Protect Against
-- API key exposure and misuse
-- Code injection vulnerabilities
-- Cross-site scripting (XSS)
-- SQL injection attacks
-- Session hijacking
-- CSRF attacks
-
-#### Built-in Security Features
-- Environment-based secret management
-- Input validation and sanitization
-- Secure session handling
-- Rate limiting (planned)
-- Content Security Policy headers (planned)
-
-#### Educational Safety
-- All injection examples are safe and controlled
-- No real sensitive data is processed
-- Demo responses when API is unavailable
-- Clear disclaimers about educational use
-
-### 🔍 Security Scope
-
-#### In Scope
-- Authentication and authorization issues
-- Data validation and injection vulnerabilities
-- Session management problems
-- API security issues
-- Secret management vulnerabilities
-- Client-side security issues (XSS, etc.)
-
-#### Out of Scope
-- Issues requiring physical access to servers
-- Social engineering attacks against project maintainers
-- Issues in third-party dependencies (unless we can reasonably fix them)
-- Rate limiting or DDoS protection (unless causing data breach)
-
-### 🧪 Security Testing
-
+We'll work with you to understand and validate the issue
+We'll develop and test a fix
+We'll coordinate the disclosure timeline
+We'll credit you in our security advisory (if desired)
+🛡️ Current Security Measures
+Frontend Security (Version 1.2+)
+XSS Prevention: All innerHTML replaced with safe DOM manipulation
+Input Validation: Comprehensive client-side validation with length limits
+CSRF Protection: Token-based protection for all API requests
+Rate Limiting: 1-second throttle between requests to prevent abuse
+Secure Error Handling: No sensitive data exposed in error messages
+Input Protection
+All user inputs are validated and sanitized on both client and server
+Multi-layer XSS protection through safe content rendering
+SQL injection prevention (when database features are added)
+API response validation to prevent malformed data processing
+Data Security
+Secure API key management through environment variables
+Session security with configurable secret keys
+No sensitive data storage in logs
+Secure communication protocols
+URL encoding for all dynamic API endpoints
+Educational Safety
+All injection examples are safe and controlled
+No real sensitive data is processed
+Demo responses when API is unavailable
+Clear disclaimers about educational use
+🔍 Security Scope
+In Scope
+Authentication and authorization issues
+Data validation and injection vulnerabilities
+Session management problems
+API security issues
+Secret management vulnerabilities
+Client-side security issues (XSS, etc.)
+Out of Scope
+Issues requiring physical access to servers
+Social engineering attacks against project maintainers
+Issues in third-party dependencies (unless we can reasonably fix them)
+Rate limiting or DDoS protection (unless causing data breach)
+🧪 Security Testing
 We encourage security testing but please:
 
-1. **Responsible Testing**:
-   - Test only against your own instances
-   - Don't target our demo/production instances without permission
-   - Respect rate limits and don't overload services
+Responsible Testing:
 
-2. **Permitted Testing**:
-   - Static code analysis
-   - Dependency vulnerability scanning
-   - Local security testing
-   - Automated security tools
+Test only against your own instances
+Don't target our demo/production instances without permission
+Respect rate limits and don't overload services
+Permitted Testing:
 
-3. **Not Permitted**:
-   - Testing against live production instances
-   - Social engineering of maintainers
-   - Physical attacks or attempts to access infrastructure
-   - Denial of service attacks
+Static code analysis
+Dependency vulnerability scanning
+Local security testing
+Automated security tools
+Not Permitted:
 
-### 📋 Security Checklist for Contributors
+Testing against live production instances
+Social engineering of maintainers
+Physical attacks or attempts to access infrastructure
+🏆 Security Hall of Fame
+We recognize security researchers who help improve our platform:
 
-Before submitting code, please ensure:
+Future contributors will be listed here
+Researchers who follow responsible disclosure
+Contributors who help improve our security posture
+📋 Security Checklist for Contributors
+Before submitting code:
 
-- [ ] No hardcoded secrets or API keys
-- [ ] Input validation for all user inputs
-- [ ] Proper error handling (no sensitive info in errors)
-- [ ] Secure session management
-- [ ] SQL queries are parameterized
-- [ ] File uploads are validated and secured
-- [ ] Third-party libraries are up to date
+ Input validation implemented
+ XSS protection in place
+ No hardcoded secrets
+ Error handling doesn't expose sensitive data
+ Dependencies are up to date
+ Security tests included
+🔧 Security Tools and Practices
+We use:
 
-### 🔧 Security Configuration
-
-#### Environment Variables
-Always use environment variables for sensitive configuration:
-
-```bash
-# Required for production
-OPENAI_API_KEY=your-api-key
-SESSION_SECRET=random-secret-key
-
-# Optional security settings
-FLASK_ENV=production
-FORCE_HTTPS=true
-```
-
-#### Production Deployment
-For production deployments:
-
-1. Use HTTPS only
-2. Set secure session cookies
-3. Implement rate limiting
-4. Regular security updates
-5. Monitor for unusual activity
-
-### 📚 Security Resources
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Flask Security Guidelines](https://flask.palletsprojects.com/en/2.3.x/security/)
-- [OpenAI API Security](https://platform.openai.com/docs/guides/safety-best-practices)
-
-### 🏆 Security Hall of Fame
-
-We recognize security researchers who help improve our security:
-
-<!-- This section will be updated as we receive reports -->
-
-### 📞 Contact Information
-
-- **Security Email**: [security@example.com]
-- **General Contact**: [contact@example.com]
-- **Project Maintainer**: [@maintainer-github-handle]
-
----
-
-**Remember**: This is an educational tool. While we take security seriously, please use responsibly and ethically.
+Static code analysis
+Dependency vulnerability scanning
+Regular security audits
+Penetration testing (periodic)
+Code review requirements
+Automated security testing
+📞 Contact Information
+Security Issues: [security@example.com]
+General Questions: [support@example.com]
+Project Maintainer: Maria Singh - LinkedIn
+📚 Additional Resources
+OWASP Top 10
+NIST Cybersecurity Framework
+CWE/SANS Top 25
+Remember: This is an educational platform. All security testing should be conducted responsibly and ethically.
